@@ -58,7 +58,7 @@
 - (void)requestPhotoURL:(NSString *)url Type:(RequestIntroDataType)type SucceedBlock:(SucceedBlock)succeedBlock failedBlock:(FailedBlock)failedBlock{
     __weak typeof(self) weakSelf = self;
     //url = @"http://capi.douyucdn.cn/api/v1/getVerticalRoom";
-    [[NetworkTool sharedNetworkTool]getWithURL:url params:nil success:^(id responseObject) {
+    [[NetworkTool sharedNetworkTool]get:url params:nil success:^(id responseObject) {
         NSLog(@"%@", responseObject);
         NSString *str = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
         NSInteger length = str.length;

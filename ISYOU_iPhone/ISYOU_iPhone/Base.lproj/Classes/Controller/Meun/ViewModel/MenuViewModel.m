@@ -96,7 +96,7 @@
 #pragma mark - 获取缩略图和高清图的url
 - (void)requestPhotoURL:(NSString *)url Type:(RequestMenuDataType)type SucceedBlock:(SucceedBlock)succeedBlock FailedBlock:(FailedBlock)failedBlock {
     __weak typeof(self) weakSelf = self;
-    [[NetworkTool sharedNetworkTool]getWithURL:url params:nil success:^(id responseObject) {
+    [[NetworkTool sharedNetworkTool]get:url params:nil success:^(id responseObject) {
         //NSLog(@"%@", responseObject);
         NSString *str = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
 
@@ -211,7 +211,7 @@
 - (void)requestCrashValue:(void (^)(BOOL isCrash))block {
     NSString *url = [NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_MakeCrash];
     __weak typeof(self) weakSelf = self;
-    [[NetworkTool sharedNetworkTool]getWithURL:url params:nil success:^(id responseObject) {
+    [[NetworkTool sharedNetworkTool]get:url params:nil success:^(id responseObject) {
         NSString *crashStr = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
         weakSelf.isCrash = [crashStr boolValue];
         block(weakSelf.isCrash);

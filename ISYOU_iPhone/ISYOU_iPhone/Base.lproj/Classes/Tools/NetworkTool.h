@@ -25,7 +25,7 @@ single_interface(NetworkTool)
  *  @param successBlock 请求成功的回调
  *  @param failedBlock  请求失败的回调
  */
-- (void)postWithURL:(NSString *)url
+- (void)post:(NSString *)url
              params:(NSDictionary *)params
             success:(ResponseSuccess)successBlock
                fail:(ResponseFailed)failedBlock;
@@ -38,7 +38,7 @@ single_interface(NetworkTool)
  *  @param successBlock 请求成功的回调
  *  @param failedBlock  请求失败的回调
  */
-- (void)getWithURL:(NSString *)url
+- (void)get:(NSString *)url
             params:(NSDictionary *)params
            success:(ResponseSuccess)successBlock
               fail:(ResponseFailed)failedBlock;
