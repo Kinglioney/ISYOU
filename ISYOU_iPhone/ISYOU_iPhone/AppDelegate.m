@@ -1,13 +1,13 @@
 //
 //  AppDelegate.m
-//  ISYOU_iPhone
+//  ISYOU
 //
-//  Created by 王雨 on 2018/4/2.
-//  Copyright © 2018年 isyou. All rights reserved.
+//  Created by apple on 2017/8/17.
+//  Copyright © 2017年 apple. All rights reserved.
 //
 
 #import "AppDelegate.h"
-
+#import "MenuViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -17,9 +17,27 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+
+    self.window = [[UIWindow alloc] init];
+    self.window.frame = [UIScreen mainScreen].bounds;
+    self.window.backgroundColor = [UIColor whiteColor];
+
+    MenuViewController *mainVC = [[MenuViewController alloc]init];
+    UINavigationController *navVC = [[UINavigationController alloc]initWithRootViewController:mainVC];
+    self.window.rootViewController = navVC;
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
+
+//- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window {
+//    //    是非支持横竖屏
+//    if (self.allowRotation) {
+//        return UIInterfaceOrientationMaskAll;
+//    } else{
+//        return UIInterfaceOrientationMaskPortrait;
+//    }
+//}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

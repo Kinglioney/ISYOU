@@ -119,6 +119,7 @@
 		DC85EF2120713E1F009DF5D9 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DC85EEB620713E1F009DF5D9 /* UIView+WebCacheOperation.m */; };
 		DC85EF2220713E1F009DF5D9 /* UIView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC85EEB720713E1F009DF5D9 /* UIView+WebCache.m */; };
 		DC85EF2320713E1F009DF5D9 /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC85EEBB20713E1F009DF5D9 /* UIButton+WebCache.m */; };
+		DC85EF272071407F009DF5D9 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC85EF262071407E009DF5D9 /* MenuViewController.m */; };
 		DE3400048AB06D05D6F8F4D2 /* libPods-ISYOU_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF97E88D32D8BC3FBE9DD865 /* libPods-ISYOU_iPhone.a */; };
 /* End PBXBuildFile section */
 
@@ -364,6 +365,8 @@
 		DC85EEBA20713E1F009DF5D9 /* UIImage+MultiFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MultiFormat.h"; sourceTree = "<group>"; };
 		DC85EEBB20713E1F009DF5D9 /* UIButton+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+WebCache.m"; sourceTree = "<group>"; };
 		DC85EEBC20713E1F009DF5D9 /* UIImage+GIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+GIF.h"; sourceTree = "<group>"; };
+		DC85EF252071407E009DF5D9 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
+		DC85EF262071407E009DF5D9 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		EDC24928DD9A5C1FA85060CB /* libPods-ISYOU_iPhoneTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ISYOU_iPhoneTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -476,11 +479,12 @@
 		DC85EDD320713E1F009DF5D9 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				DC85EF242071407E009DF5D9 /* Main */,
+				DC85EDE020713E1F009DF5D9 /* Controller */,
+				DC85EE2420713E1F009DF5D9 /* View */,
 				DC85EDD420713E1F009DF5D9 /* Tools */,
 				DC85EDD720713E1F009DF5D9 /* Category */,
 				DC85EDDA20713E1F009DF5D9 /* Others */,
-				DC85EDE020713E1F009DF5D9 /* Controller */,
-				DC85EE2420713E1F009DF5D9 /* View */,
 				DC85EE2E20713E1F009DF5D9 /* Lib */,
 			);
 			name = Classes;
@@ -521,9 +525,9 @@
 			isa = PBXGroup;
 			children = (
 				DC85EDE120713E1F009DF5D9 /* Intro */,
-				DC85EDFD20713E1F009DF5D9 /* SHBAVController.m */,
 				DC85EDFE20713E1F009DF5D9 /* Meun */,
 				DC85EE2320713E1F009DF5D9 /* SHBAVController.h */,
+				DC85EDFD20713E1F009DF5D9 /* SHBAVController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -931,6 +935,15 @@
 			path = SDWebImage;
 			sourceTree = "<group>";
 		};
+		DC85EF242071407E009DF5D9 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				DC85EF252071407E009DF5D9 /* MenuViewController.h */,
+				DC85EF262071407E009DF5D9 /* MenuViewController.m */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1312,6 +1325,7 @@
 				DC85EEDB20713E1F009DF5D9 /* BaseMenuCell.m in Sources */,
 				DC85EEFD20713E1F009DF5D9 /* UIViewController+ZFPlayerRotation.m in Sources */,
 				DC85EECD20713E1F009DF5D9 /* MenuViewModel.m in Sources */,
+				DC85EF272071407F009DF5D9 /* MenuViewController.m in Sources */,
 				DC85EF1C20713E1F009DF5D9 /* SDWebImageDownloaderOperation.m in Sources */,
 				DC85EEC420713E1F009DF5D9 /* AreaNavViewController.m in Sources */,
 				DC85EED020713E1F009DF5D9 /* InjectionViewController.m in Sources */,
