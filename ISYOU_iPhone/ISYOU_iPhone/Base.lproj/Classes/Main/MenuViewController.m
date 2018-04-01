@@ -106,7 +106,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 
     //初始化视图模型
     _introVM = [[IntroViewModel alloc]init];
-    [_introVM requestDataWithIndex:0 finishBlock:^{
+    [_introVM requestDataWithType:0 finishBlock:^{
         NSLog(@"获取ISYOU网络数据成功！");
         }failedBlock:^{
             return ;
@@ -232,7 +232,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                  iyVC.childMeunIndex = index;
                 
                 if (!isyouModelsData && !isyouModelsData.length) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         iyVC.isyouModel = self.introVM.isyouModel;
                     } failedBlock:^{
                         return ;
@@ -256,7 +256,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 mtVC.childMeunIndex = index;
 
                 if (!medicalModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         mtVC.medicalTeamModel = self.introVM.medicalModel;
                     }failedBlock:^{
                         return ;
@@ -282,7 +282,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 anVC.childMeunIndex = index;
 
                 if (!areaModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         anVC.areaModel = self.introVM.areaModel;
                     }failedBlock:^{
                         return ;
@@ -307,7 +307,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 stVC.childMeunIndex = index;
 
                 if (!serviceModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         stVC.serviceTeamModel = self.introVM.serviceModel;
                     }failedBlock:^{
                         return ;
@@ -325,7 +325,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 AboutViewController *aboutVC = [[AboutViewController alloc]init];
                 aboutVC.childMeunIndex = index;
                 if (!aboutModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         aboutVC.aboutModel = self.introVM.aboutModel;
                     }failedBlock:^{
                         return ;

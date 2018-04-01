@@ -45,6 +45,6 @@ typedef NS_ENUM(NSInteger, RequestIntroDataType) {
 
 @property (nonatomic, copy  ) FailedBlock failedBlock;
 
-- (void)requestDataWithIndex:(NSInteger)index finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock;
+- (void)requestDataWithType:(RequestIntroDataType)type finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock;
 
 @end
