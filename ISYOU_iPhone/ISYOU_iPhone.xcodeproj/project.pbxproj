@@ -545,8 +545,8 @@
 		DC85EDE220713E1F009DF5D9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				DC85EDE320713E1F009DF5D9 /* IntroViewModel.m */,
 				DC85EDE420713E1F009DF5D9 /* IntroViewModel.h */,
+				DC85EDE320713E1F009DF5D9 /* IntroViewModel.m */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -602,8 +602,8 @@
 		DC85EDFF20713E1F009DF5D9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				DC85EE0020713E1F009DF5D9 /* MenuViewModel.m */,
 				DC85EE0120713E1F009DF5D9 /* MenuViewModel.h */,
+				DC85EE0020713E1F009DF5D9 /* MenuViewModel.m */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";

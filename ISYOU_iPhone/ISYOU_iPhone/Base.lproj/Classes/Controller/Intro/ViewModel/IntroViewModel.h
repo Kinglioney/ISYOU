@@ -12,10 +12,20 @@
 #import "AreaModel.h"
 #import "ServiceTeamModel.h"
 #import "AboutModel.h"
-
-typedef void(^FinishBlock)();
-typedef void(^SucceedBlock)();
-typedef void(^FailedBlock)();
+/**定义请求数据的回调*/
+typedef void(^FinishBlock)(void);
+typedef void(^SucceedBlock)(void);
+typedef void(^FailedBlock)(void);
+/**定义请求数据的类型枚举*/
+typedef NS_ENUM(NSInteger, RequestIntroDataType) {
+    RequestIntroDataTypeIsyou = 0,//ISYOU
+    RequestIntroDataTypeMedical,//医疗团队
+    RequestIntroDataTypeAreanav,//区域导航
+    RequestIntroDataTypeService,//服务团队
+    RequestIntroDataTypeAbout,//关于我们
+    
+    
+};
 @interface IntroViewModel : NSObject
 
 /** ISYOU模型 */
@@ -36,8 +46,5 @@ typedef void(^FailedBlock)();
 @property (nonatomic, copy  ) FailedBlock failedBlock;
 
 - (void)requestDataWithIndex:(NSInteger)index finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock;
-
-
-- (void)requestAllData:(FinishBlock)finishBlock;
 
 @end

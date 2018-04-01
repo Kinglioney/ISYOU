@@ -7,11 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-typedef void(^FinishBlock)();
-typedef void(^SucceedBlock)();
-typedef void(^FailedBlock)();
 @interface MenuViewModel : NSObject
-
+/** 请求数据的类型枚举*/
+typedef NS_ENUM(NSInteger, RequestMenuDataType) {
+    RequestMenuDataTypeLaser = 0,//激光类
+    RequestMenuDataTypeInjection,//注射类
+    RequestMenuDataTypePlastic,//整形外科
+    RequestMenuDataTypeHealth,//大健康类
+    
+};
+typedef void(^FinishBlock)(void);
+typedef void(^SucceedBlock)(void);
+typedef void(^FailedBlock)(void);
 /** 激光类模型数组 */
 @property (nonatomic, strong) NSMutableArray *lasers;
 /** 注射类模型数组 */
@@ -29,11 +36,8 @@ typedef void(^FailedBlock)();
 
 @property (nonatomic, copy  ) FailedBlock failedBlock;
 
-/** 获取所有的缩略图的数据 */
-- (void)requestAllData:(FinishBlock)finishBlock;
-
 /** 获取缩略图和高清图的数据 */
-- (void)requestPhotoDataWithIndex:(NSInteger)index finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock;
+- (void)requestPhotoDataWithType:(RequestMenuDataType)type finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock;
 
 /** 获取是否执行崩溃的bool值 */
 - (void)requestCrashValue:(void (^)(BOOL isCrash))block;

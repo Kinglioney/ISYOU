@@ -27,9 +27,8 @@
 @property (nonatomic, strong) InjectionModel *injectionModel;
 @property (nonatomic, strong) PlasticModel *plasticModel;
 @property (nonatomic, strong) HealthModel *healthModel;
+
 @end
-
-
 
 @implementation MenuViewModel
 //MARK: 懒加载
@@ -37,7 +36,6 @@
     if (!_lasers) {
         _lasers = [NSMutableArray array];
     }
-
     return _lasers;
 }
 
@@ -63,45 +61,30 @@
     return _healths;
 }
 #pragma mark - 网络请求
-- (void)requestPhotoDataWithIndex:(NSInteger)index finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock {
+- (void)requestPhotoDataWithType:(RequestMenuDataType)type finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock {
     NSString *url;
 
-    switch (index) {
-            case 0:
-        {
+    switch (type) {
+        case RequestMenuDataTypeLaser:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_LASER]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-        }
             break;
 
-            case 1:
-        {
+        case RequestMenuDataTypeInjection:
             // 1.拼接URL来获取图片的路径
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_INJECTION]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-        }
             break;
-
-        case 2:
-        {
+        case RequestMenuDataTypePlastic:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_PLASTIC]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-        }
             break;
-
-        case 3:
-        {
+        case RequestMenuDataTypeHealth:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_HEALTH]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-        }
             break;
-
         default:
             break;
     }
 
     [self requestPhotoURL:url
-                Index:index
+                Type:type
          SucceedBlock:^{
              finishBlock();
          }FailedBlock:^{
@@ -111,7 +94,8 @@
 
 
 #pragma mark - 获取缩略图和高清图的url
-- (void)requestPhotoURL:(NSString *)url Index:(NSInteger)index SucceedBlock:(SucceedBlock)succeedBlock FailedBlock:(FailedBlock)failedBlock {
+- (void)requestPhotoURL:(NSString *)url Type:(RequestMenuDataType)type SucceedBlock:(SucceedBlock)succeedBlock FailedBlock:(FailedBlock)failedBlock {
+    __weak typeof(self) weakSelf = self;
     [[NetworkTool sharedNetworkTool]getWithURL:url params:nil success:^(id responseObject) {
         //NSLog(@"%@", responseObject);
         NSString *str = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
@@ -132,13 +116,13 @@
         // 3.拼接一个完整的图片路径
         NSMutableArray *datas = [NSMutableArray array];
         for (int i = 0; i < thumbnailUrls.count; i++) {
-            _laserModel = [LaserModel new];
+            weakSelf.laserModel = [LaserModel new];
 
-            _injectionModel = [InjectionModel new];
+            weakSelf.injectionModel = [InjectionModel new];
 
-            _plasticModel = [PlasticModel new];
+            weakSelf.plasticModel = [PlasticModel new];
 
-            _healthModel = [HealthModel new];
+            weakSelf.healthModel = [HealthModel new];
 
             NSInteger length = [thumbnailUrls[i] length];
             NSString *photoUrl = [thumbnailUrls[i] substringWithRange:(i==thumbnailUrls.count-1)? NSMakeRange(1, length-2): NSMakeRange(1, length-1)];
@@ -177,41 +161,41 @@
 
 
 
-            if (index == 0) {
-                    _laserModel.thumbnailImagrUrl = thumbnailImageUrl;
-                    _laserModel.orignalImagrUrls = orignalImageUrls;
-                    [self.lasers addObject:_laserModel];
+            if (type == RequestMenuDataTypeLaser) {
+                    weakSelf.laserModel.thumbnailImagrUrl = thumbnailImageUrl;
+                    weakSelf.laserModel.orignalImagrUrls = orignalImageUrls;
+                    [self.lasers addObject:weakSelf.laserModel];
 
                     //将model转换为NSData
-                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_laserModel];
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.laserModel];
                     [datas addObject:data];
                     [USER_DEFAULT setObject:datas forKey:UserDefault_Laser];
 
-                }else if (index == 1){
-                    _injectionModel.thumbnailImagrUrl = thumbnailImageUrl;
-                    _injectionModel.orignalImagrUrls = orignalImageUrls;
-                    [self.injections addObject:_injectionModel];
+            }else if (type == RequestMenuDataTypeInjection){
+                    weakSelf.injectionModel.thumbnailImagrUrl = thumbnailImageUrl;
+                    weakSelf.injectionModel.orignalImagrUrls = orignalImageUrls;
+                    [self.injections addObject:weakSelf.injectionModel];
 
                     //将model转换为NSData
-                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_injectionModel];
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.injectionModel];
                     [datas addObject:data];
                     [USER_DEFAULT setObject:datas forKey:UserDefault_Injection];
-                }else if (index == 2){
-                    _plasticModel.thumbnailImagrUrl = thumbnailImageUrl;
-                    _plasticModel.orignalImagrUrls = orignalImageUrls;
-                    [self.plastics addObject:_plasticModel];
+                }else if (type == RequestMenuDataTypePlastic){
+                    weakSelf.plasticModel.thumbnailImagrUrl = thumbnailImageUrl;
+                    weakSelf.plasticModel.orignalImagrUrls = orignalImageUrls;
+                    [self.plastics addObject:weakSelf.plasticModel];
 
                     //将model转换为NSData
-                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_plasticModel];
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.plasticModel];
                     [datas addObject:data];
                     [USER_DEFAULT setObject:datas forKey:UserDefault_Plastic];
                 }else{
-                    _healthModel.thumbnailImagrUrl = thumbnailImageUrl;
-                    _healthModel.orignalImagrUrls = orignalImageUrls;
-                    [self.healths addObject:_healthModel];
+                    weakSelf.healthModel.thumbnailImagrUrl = thumbnailImageUrl;
+                    weakSelf.healthModel.orignalImagrUrls = orignalImageUrls;
+                    [self.healths addObject:weakSelf.healthModel];
 
                     //将model转换为NSData
-                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_healthModel];
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.healthModel];
                     [datas addObject:data];
                     [USER_DEFAULT setObject:datas forKey:UserDefault_Health];
                 }
@@ -223,53 +207,14 @@
 
 }
 
-
-- (void)requestAllData:(FinishBlock)finishBlock {
-    dispatch_group_t group = dispatch_group_create();
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_group_async(group, queue, ^{
-        [self requestPhotoDataWithIndex:0 finishBlock:^{
-            //finishBlock();
-        }failedBlock:^{
-
-        }];
-    });
-    dispatch_group_async(group, queue, ^{
-        [self requestPhotoDataWithIndex:1 finishBlock:^{
-            //finishBlock();
-        }failedBlock:^{
-
-        }];
-
-    });
-    dispatch_group_async(group, queue, ^{
-        [self requestPhotoDataWithIndex:2 finishBlock:^{
-            //finishBlock();
-        }failedBlock:^{
-
-        }];
-
-    });
-    dispatch_group_async(group, queue, ^{
-        [self requestPhotoDataWithIndex:3 finishBlock:^{
-            //finishBlock();
-        }failedBlock:^{
-
-        }];
-    });
-
-    dispatch_group_notify(group, queue, ^{
-        finishBlock();
-    });
-}
-
 /** 获取是否执行崩溃的bool值 */
 - (void)requestCrashValue:(void (^)(BOOL isCrash))block {
     NSString *url = [NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_MakeCrash];
+    __weak typeof(self) weakSelf = self;
     [[NetworkTool sharedNetworkTool]getWithURL:url params:nil success:^(id responseObject) {
         NSString *crashStr = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-        _isCrash = [crashStr boolValue];
-        block(_isCrash);
+        weakSelf.isCrash = [crashStr boolValue];
+        block(weakSelf.isCrash);
         
     } fail:^(NSError *error) {
         NSLog(@"failed");

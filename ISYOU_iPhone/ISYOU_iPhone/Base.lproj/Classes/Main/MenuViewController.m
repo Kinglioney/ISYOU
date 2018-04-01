@@ -134,14 +134,12 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
     }];
 
     self.childMenuBar.selectedIndex = 1;//默认是首页
-    
-
-    
+    __weak typeof(self) weakSelf = self;
     //监听网络状态
     [[NetworkTool sharedNetworkTool] getNetworkState:^(BOOL state) {
-        _networkState = state;
+        weakSelf.networkState = state;
         
-        if (_networkState) {// 连接网络
+        if ( weakSelf.networkState) {// 连接网络
             [self requestServertoDecideCrash:^(BOOL crash) {
                 if (crash) {
                     [self makeAppCrash];
@@ -150,8 +148,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 }
             }];
         }else {// 没有网络
-            _isCrash = [USER_DEFAULT boolForKey:UserDefaule_IsCrash];
-            if (_isCrash) {
+             weakSelf.isCrash = [USER_DEFAULT boolForKey:UserDefaule_IsCrash];
+            if (weakSelf.isCrash) {
                 [self makeAppCrash];
             }else{
                 [self playVideo];// 播放视频
@@ -173,14 +171,14 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
         _updateView.delegate = self;
         _updateView.backgroundColor = [UIColor clearColor];
         [self.view addSubview:_updateView];
-        
+        __weak typeof(self) weakSelf = self;
         [_updateView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.bottom.left.right.equalTo(self.view);
         }];
         _updateView.transform = CGAffineTransformMakeScale(0, 0);
 
         [UIView animateWithDuration:0.38 delay:0 usingSpringWithDamping:1 initialSpringVelocity:1 options:UIViewAnimationOptionLayoutSubviews animations:^{
-            _updateView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+            weakSelf.updateView.transform = CGAffineTransformMakeScale(1.0, 1.0);
         } completion:nil];
         
         
@@ -224,7 +222,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
     NSMutableArray *plasticModelsData = [USER_DEFAULT objectForKey:UserDefault_Plastic];
     NSMutableArray *healthModelsData = [USER_DEFAULT objectForKey:UserDefault_Health];
     
-
+    __weak typeof(self) weakSelf = self;
     switch (_menuIndex) {
         case 1://企业简介
         {
@@ -362,9 +360,9 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 }
                 LaserViewController *laVC = [[LaserViewController alloc]init];
                 if(!laserModelsData){
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取激光类数据成功！");
-                        laVC.laserModels = _menuVM.lasers;
+                        laVC.laserModels = weakSelf.menuVM.lasers;
 
                     }failedBlock:^{
                         return ;
@@ -391,9 +389,9 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 InjectionViewController *inVC = [[InjectionViewController alloc]init];
 
                 if(!injectionModelsData){
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取注射类数据成功！");
-                        inVC.injectionModels = _menuVM.injections;
+                        inVC.injectionModels = weakSelf.menuVM.injections;
             
                     }failedBlock:^{
                         return ;
@@ -419,9 +417,9 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 PlasticViewController *plVC = [[PlasticViewController alloc]init];
 
                 if (!plasticModelsData) {
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
-                        plVC.plasticModels = _menuVM.plastics;
+                        plVC.plasticModels = weakSelf.menuVM.plastics;
                     }failedBlock:^{
                         return ;
                     }];
@@ -448,9 +446,9 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 HealthViewController *heVC = [[HealthViewController alloc]init];
 
                 if (!healthModelsData) {
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
-                        heVC.healthModels = _menuVM.healths;
+                        heVC.healthModels = weakSelf.menuVM.healths;
 
                     }failedBlock:^{
                         return ;
@@ -572,10 +570,11 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 //MARK: - 从服务器获取是否让程序崩溃的标志
 - (void)requestServertoDecideCrash:(void(^)(BOOL crash))success {
     if(_networkState){
+        __weak typeof(self) weakSelf = self;
         MenuViewModel *menuVM = [MenuViewModel new];
         //服务器上返回1表明允许使用不执行崩溃程序，若返回0则执行崩溃程序
         [menuVM requestCrashValue:^(BOOL isCrash) {
-            _isCrash = !isCrash;
+            weakSelf.isCrash = !isCrash;
             [[NSUserDefaults standardUserDefaults] setBool:!isCrash forKey:UserDefaule_IsCrash];
             success(!isCrash);
         }];

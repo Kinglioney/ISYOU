@@ -15,60 +15,35 @@
 #define URL_AREANAV   @"download2?folderName=区域导航&type=IPHONE"
 #define URL_SERVICE   @"download2?folderName=服务团队&type=IPHONE"
 #define URL_ABOUT     @"download2?folderName=关于我们&type=IPHONE"
-
 @interface IntroViewModel()
 
-
 @end
-
-
-
 @implementation IntroViewModel
-
-
 //MARK: 网络请求
-- (void)requestDataWithIndex:(NSInteger)index finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock {
-
+- (void)requestDataWithType:(RequestIntroDataType)type finishBlock:(FinishBlock)finishBlock failedBlock:(FailedBlock)failedBlock {
     NSString *url;
-    switch (index) {
-        case 0:
-        {
+    switch (type) {
+        case RequestIntroDataTypeIsyou:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_ISYOU]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-        }
             break;
-
-        case 1:
-        {
-
+        case RequestIntroDataTypeMedical:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_MEDICAL]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-        }
             break;
-
-        case 2:
-        {
+        case RequestIntroDataTypeAreanav:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_AREANAV]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-        }
             break;
-
-        case 3:
-        {
+        case RequestIntroDataTypeService:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_SERVICE]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-        }
             break;
-        case 4:
-        {
+        case RequestIntroDataTypeAbout:
             url = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, URL_ABOUT]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-        }
             break;
-
         default:
             break;
     }
 
     [self requestPhotoURL:url
-                    Index:index
+                    Type:type
              SucceedBlock:^{
                  finishBlock();
              }
@@ -80,8 +55,9 @@
 
 
 }
-- (void)requestPhotoURL:(NSString *)url Index:(NSInteger)index SucceedBlock:(SucceedBlock)succeedBlock failedBlock:(FailedBlock)failedBlock{
-    url = @"http://capi.douyucdn.cn/api/v1/getVerticalRoom";
+- (void)requestPhotoURL:(NSString *)url Type:(RequestIntroDataType)type SucceedBlock:(SucceedBlock)succeedBlock failedBlock:(FailedBlock)failedBlock{
+    __weak typeof(self) weakSelf = self;
+    //url = @"http://capi.douyucdn.cn/api/v1/getVerticalRoom";
     [[NetworkTool sharedNetworkTool]getWithURL:url params:nil success:^(id responseObject) {
         NSLog(@"%@", responseObject);
         NSString *str = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
@@ -94,16 +70,16 @@
 
         // 2.拿到缩略图的路径
         NSArray *orignalUrls =[str componentsSeparatedByString:@"],"];
-        _isyouModel = [IsyouModel new];
-        _medicalModel = [MedicalTeamModel new];
-        _areaModel = [AreaModel new];
-        _serviceModel = [ServiceTeamModel new];
-        _aboutModel = [AboutModel new];
-        _isyouModel.orignalImagrUrls = [NSMutableArray array];
-        _medicalModel.orignalImagrUrls = [NSMutableArray array];
-        _areaModel.orignalImagrUrls = [NSMutableArray array];
-        _serviceModel.orignalImagrUrls = [NSMutableArray array];
-        _aboutModel.orignalImagrUrls = [NSMutableArray array];
+        weakSelf.isyouModel = [IsyouModel new];
+        weakSelf.medicalModel = [MedicalTeamModel new];
+        weakSelf.areaModel = [AreaModel new];
+        weakSelf.serviceModel = [ServiceTeamModel new];
+        weakSelf.aboutModel = [AboutModel new];
+        weakSelf.isyouModel.orignalImagrUrls = [NSMutableArray array];
+        weakSelf.medicalModel.orignalImagrUrls = [NSMutableArray array];
+        weakSelf.areaModel.orignalImagrUrls = [NSMutableArray array];
+        weakSelf.serviceModel.orignalImagrUrls = [NSMutableArray array];
+        weakSelf.aboutModel.orignalImagrUrls = [NSMutableArray array];
 
         // 3.拼接一个完整的图片路径
        // NSMutableArray *datas = [NSMutableArray array];
@@ -131,50 +107,50 @@
             }
 
 
-            if(index == 0) {
+            if(type == RequestIntroDataTypeIsyou) {
                 
-                [_isyouModel.orignalImagrUrls addObject:orignalImageUrl];
+                [weakSelf.isyouModel.orignalImagrUrls addObject:orignalImageUrl];
                 //[self.isyous addObject:_isyouModel];
                 //将model转换为NSData
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_isyouModel];
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.isyouModel];
                 //[datas addObject:data];
                 [USER_DEFAULT setObject:data forKey:UserDefault_Isyou];
 
-            }else if (index == 1) {
+            }else if (type == RequestIntroDataTypeMedical) {
 
-                [_medicalModel.orignalImagrUrls addObject: orignalImageUrl];
+                [weakSelf.medicalModel.orignalImagrUrls addObject: orignalImageUrl];
                // [self.medicalTeams addObject:_medicalModel];
 
                 //将model转换为NSData
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_medicalModel];
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.medicalModel];
                 //[datas addObject:data];
                 [USER_DEFAULT setObject:data forKey:UserDefault_Medical];
 
-            }else if (index == 2){
+            }else if (type == RequestIntroDataTypeAreanav){
 
-                [_areaModel.orignalImagrUrls addObject: orignalImageUrl];
+                [weakSelf.areaModel.orignalImagrUrls addObject: orignalImageUrl];
                 
 
                 //将model转换为NSData
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_areaModel];
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.areaModel];
                 //[datas addObject:data];
                 [USER_DEFAULT setObject:data forKey:UserDefault_Area];
-            }else if (index ==3){
+            }else if (type == RequestIntroDataTypeService){
 
-                [_serviceModel.orignalImagrUrls addObject: orignalImageUrl];
+                [weakSelf.serviceModel.orignalImagrUrls addObject: orignalImageUrl];
                 //[self.serviceTeams addObject:_serviceModel];
 
                 //将model转换为NSData
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_serviceModel];
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.serviceModel];
                 //[datas addObject:data];
                 [USER_DEFAULT setObject:data forKey:UserDefault_Service];
             }else{
 
-                [_aboutModel.orignalImagrUrls addObject: orignalImageUrl];
+                [weakSelf.aboutModel.orignalImagrUrls addObject: orignalImageUrl];
                 //[self.abouts addObject:_aboutModel];
 
                 //将model转换为NSData
-                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:_aboutModel];
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:weakSelf.aboutModel];
                 //[datas addObject:data];
                 [USER_DEFAULT setObject:data forKey:UserDefault_About];
             }
@@ -187,44 +163,4 @@
     
 }
 
-
-- (void)requestAllData:(FinishBlock)finishBlock {
-
-    dispatch_group_t group = dispatch_group_create();
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_group_async(group, queue, ^{
-        [self requestDataWithIndex:0 finishBlock:^{
-            finishBlock();
-        }failedBlock:^{
-
-        }];
-    });
-    dispatch_group_async(group, queue, ^{
-        [self requestDataWithIndex:1 finishBlock:^{
-            finishBlock();
-        }failedBlock:^{
-
-        }];
-
-    });
-    dispatch_group_async(group, queue, ^{
-        [self requestDataWithIndex:2 finishBlock:^{
-            finishBlock();
-        }failedBlock:^{
-
-        }];
-
-    });
-    dispatch_group_async(group, queue, ^{
-        [self requestDataWithIndex:3 finishBlock:^{
-            finishBlock();
-        }failedBlock:^{
-
-        }];
-    });
-
-    dispatch_group_notify(group, queue, ^{
-        finishBlock();
-    });
-}
 @end
