@@ -103,7 +103,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 
     //初始化视图模型
     _introVM = [[IntroViewModel alloc]init];
-    [_introVM requestDataWithIndex:0 finishBlock:^{
+    [_introVM requestDataWithType:0 finishBlock:^{
         NSLog(@"获取ISYOU网络数据成功！");
         }failedBlock:^{
             return ;
@@ -230,7 +230,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                  iyVC.childMeunIndex = index;
                 
                 if (!isyouModelsData && !isyouModelsData.length) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         iyVC.isyouModel = self.introVM.isyouModel;
                     } failedBlock:^{
                         return ;
@@ -254,7 +254,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 mtVC.childMeunIndex = index;
 
                 if (!medicalModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         mtVC.medicalTeamModel = self.introVM.medicalModel;
                     }failedBlock:^{
                         return ;
@@ -280,7 +280,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 anVC.childMeunIndex = index;
 
                 if (!areaModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         anVC.areaModel = self.introVM.areaModel;
                     }failedBlock:^{
                         return ;
@@ -305,7 +305,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 stVC.childMeunIndex = index;
 
                 if (!serviceModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         stVC.serviceTeamModel = self.introVM.serviceModel;
                     }failedBlock:^{
                         return ;
@@ -323,7 +323,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 AboutViewController *aboutVC = [[AboutViewController alloc]init];
                 aboutVC.childMeunIndex = index;
                 if (!aboutModelsData) {
-                    [_introVM requestDataWithIndex:index finishBlock:^{
+                    [_introVM requestDataWithType:index finishBlock:^{
                         aboutVC.aboutModel = self.introVM.aboutModel;
                     }failedBlock:^{
                         return ;
@@ -358,7 +358,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 }
                 LaserViewController *laVC = [[LaserViewController alloc]init];
                 if(!laserModelsData){
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取激光类数据成功！");
                         laVC.laserModels = _menuVM.lasers;
 
@@ -387,7 +387,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 InjectionViewController *inVC = [[InjectionViewController alloc]init];
 
                 if(!injectionModelsData){
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取注射类数据成功！");
                         inVC.injectionModels = _menuVM.injections;
             
@@ -415,7 +415,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 PlasticViewController *plVC = [[PlasticViewController alloc]init];
 
                 if (!plasticModelsData) {
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
                         plVC.plasticModels = _menuVM.plastics;
                     }failedBlock:^{
@@ -444,7 +444,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 HealthViewController *heVC = [[HealthViewController alloc]init];
 
                 if (!healthModelsData) {
-                    [_menuVM requestPhotoDataWithIndex:index finishBlock:^{
+                    [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
                         heVC.healthModels = _menuVM.healths;
 

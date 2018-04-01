@@ -14,10 +14,10 @@
 @implementation NetworkTool
 single_implementation(NetworkTool)
 
-- (void)postWithURL:(NSString *)url params:(NSDictionary *)params success:(ResponseSuccess)successBlock fail:(ResponseFailed)failedBlock{
+- (void)post:(NSString *)url params:(NSDictionary *)params success:(ResponseSuccess)successBlock fail:(ResponseFailed)failedBlock{
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
     [manager POST:url parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
 
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -30,9 +30,9 @@ single_implementation(NetworkTool)
 
 }
 
-- (void)getWithURL:(NSString *)url params:(NSDictionary *)params success:(ResponseSuccess)successBlock fail:(ResponseFailed)failedBlock{
+- (void)get:(NSString *)url params:(NSDictionary *)params success:(ResponseSuccess)successBlock fail:(ResponseFailed)failedBlock{
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
     [manager GET:url parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
 
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {

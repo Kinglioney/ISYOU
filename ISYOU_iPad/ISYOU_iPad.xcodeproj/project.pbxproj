@@ -478,8 +478,8 @@
 		DC85EF6720714EA6009DF5D9 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				DC85EF6820714EA6009DF5D9 /* NetworkTool.m */,
 				DC85EF6920714EA6009DF5D9 /* NetworkTool.h */,
+				DC85EF6820714EA6009DF5D9 /* NetworkTool.m */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -529,8 +529,8 @@
 		DC85EF7520714EA6009DF5D9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				DC85EF7620714EA6009DF5D9 /* IntroViewModel.m */,
 				DC85EF7720714EA6009DF5D9 /* IntroViewModel.h */,
+				DC85EF7620714EA6009DF5D9 /* IntroViewModel.m */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -586,8 +586,8 @@
 		DC85EF9220714EA6009DF5D9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				DC85EF9320714EA6009DF5D9 /* MenuViewModel.m */,
 				DC85EF9420714EA6009DF5D9 /* MenuViewModel.h */,
+				DC85EF9320714EA6009DF5D9 /* MenuViewModel.m */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -1392,7 +1392,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/ISYOU_iPad/Base.lproj/Classes/Others/ISYOU_PrefixHeader.pch";
 				INFOPLIST_FILE = ISYOU_iPad/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.isyou.ISYOU-iPad";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1409,7 +1412,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/ISYOU_iPad/Base.lproj/Classes/Others/ISYOU_PrefixHeader.pch";
 				INFOPLIST_FILE = ISYOU_iPad/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.isyou.ISYOU-iPad";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1423,7 +1429,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TX8X4G99PU;
 				INFOPLIST_FILE = ISYOU_iPadTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.isyou.ISYOU-iPadTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1438,7 +1448,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TX8X4G99PU;
 				INFOPLIST_FILE = ISYOU_iPadTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.isyou.ISYOU-iPadTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1452,7 +1466,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TX8X4G99PU;
 				INFOPLIST_FILE = ISYOU_iPadUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.isyou.ISYOU-iPadUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1466,7 +1484,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TX8X4G99PU;
 				INFOPLIST_FILE = ISYOU_iPadUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.isyou.ISYOU-iPadUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
