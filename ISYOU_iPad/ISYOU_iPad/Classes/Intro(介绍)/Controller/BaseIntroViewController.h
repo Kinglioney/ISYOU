@@ -7,12 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PYPhotoBrowser.h"
-
-@interface BaseIntroViewController : UIViewController<PYPhotoBrowseViewDataSource, PYPhotoBrowseViewDelegate>
+#import <MWPhotoBrowser/MWPhotoBrowser.h>
+@interface BaseIntroViewController : UIViewController
 
 /** 图片浏览器 */
-@property (nonatomic, strong) PYPhotoBrowseView *photoBrowser;
+@property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 
 /** 图片的url */
 @property (nonatomic, strong) NSMutableArray *imagesURL;

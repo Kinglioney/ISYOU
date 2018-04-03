@@ -61,6 +61,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 @property (nonatomic, assign) BOOL networkState;
 /** 程序崩溃的标志 */
 @property (nonatomic, assign) BOOL isCrash;
+@property (nonatomic, strong) NSArray *introImageUrls;
+
 @end
 
 @implementation MenuViewController
@@ -221,151 +223,172 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
     NSMutableArray *healthModelsData = [USER_DEFAULT objectForKey:UserDefault_Health];
     BOOL netWorkState = [NetworkTool sharedNetworkTool].netWorkState;
 
+    __weak typeof(self) weakSelf = self;
     switch (_menuIndex) {
         case 1://企业简介
         {
             if(index == 0){
-
+                
                 ISYOUViewController *iyVC = [[ISYOUViewController alloc]init];
-                 iyVC.childMeunIndex = index;
+                iyVC.childMeunIndex = index;
                 
                 if (!isyouModelsData && !isyouModelsData.length) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         iyVC.isyouModel = self.introVM.isyouModel;
                     } failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-
+                    
                     IsyouModel *isyouModel = [NSKeyedUnarchiver unarchiveObjectWithData:isyouModelsData];
-
+                    
                     iyVC.isyouModel = isyouModel;
                 }
-
+                
                 vc = iyVC;
             }else if (index == 1 ){
-                if (!netWorkState && !medicalModelsData.length) {
+                if (!_networkState && !medicalModelsData.length) {
                     NSLog(@"请检查网络连接");
                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 MedicalTeamViewController *mtVC = [[MedicalTeamViewController alloc]init];
-
+                
                 mtVC.childMeunIndex = index;
-
+                
                 if (!medicalModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
-                        mtVC.medicalTeamModel = self.introVM.medicalModel;
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                        //mtVC.medicalTeamModel = self.introVM.medicalModel;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-
+                    
                     MedicalTeamModel *medicalTeamModel = [NSKeyedUnarchiver unarchiveObjectWithData:medicalModelsData];
-
-                    mtVC.medicalTeamModel = medicalTeamModel;
-
+                    //mtVC.medicalTeamModel = medicalTeamModel;
+                    _introImageUrls = medicalTeamModel.orignalImagrUrls;
                 }
-
+                
                 vc = mtVC;
-
+                
             }else if (index == 2){
-                if (!netWorkState && !areaModelsData.length) {
+                if (!_networkState && !areaModelsData.length) {
                     NSLog(@"请检查网络连接");
-                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
+                    [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 AreaNavViewController *anVC = [[AreaNavViewController alloc]init];
-
+                
                 anVC.childMeunIndex = index;
-
+                
                 if (!areaModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         anVC.areaModel = self.introVM.areaModel;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-
                     AreaModel *areaModel = [NSKeyedUnarchiver unarchiveObjectWithData:areaModelsData];
-
-                    anVC.areaModel = areaModel;
-                    
+                    //anVC.areaModel = areaModel;
+                    _introImageUrls = areaModel.orignalImagrUrls;
                 }
-
                 vc = anVC;
-
             }else if(index == 3 ){
-                if (!netWorkState && !serviceModelsData.length) {
+                if (!_networkState && !serviceModelsData.length) {
                     NSLog(@"请检查网络连接");
-                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
+                    [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 ServiceTeamViewController *stVC = [[ServiceTeamViewController alloc]init];
                 stVC.childMeunIndex = index;
-
+                
                 if (!serviceModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         stVC.serviceTeamModel = self.introVM.serviceModel;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-
-                ServiceTeamModel *serviceModel = [NSKeyedUnarchiver unarchiveObjectWithData:serviceModelsData];
-
-                    stVC.serviceTeamModel = serviceModel;
-
+                    ServiceTeamModel *serviceModel = [NSKeyedUnarchiver unarchiveObjectWithData:serviceModelsData];
+                    //stVC.serviceTeamModel = serviceModel;
+                    _introImageUrls = serviceModel.orignalImagrUrls;
                 }
-
+                
                 vc = stVC;
             }else{
                 AboutViewController *aboutVC = [[AboutViewController alloc]init];
                 aboutVC.childMeunIndex = index;
                 if (!aboutModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         aboutVC.aboutModel = self.introVM.aboutModel;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-                    if (!netWorkState && !aboutModelsData.length) {
+                    if (!_networkState && !aboutModelsData.length) {
                         NSLog(@"请检查网络连接");
-                         [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
+                        [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                         return;
                     }
-
-                AboutModel *aboutModel = [NSKeyedUnarchiver unarchiveObjectWithData:aboutModelsData];
-
-                aboutVC.aboutModel = aboutModel;
-                    
+                    AboutModel *aboutModel = [NSKeyedUnarchiver unarchiveObjectWithData:aboutModelsData];
+                    //aboutVC.aboutModel = aboutModel;
+                    _introImageUrls = aboutModel.orignalImagrUrls;
                 }
-
                 vc = aboutVC;
             }
-
         }
             break;
         case 2://项目单
         {
-
             if(index == 0){
-
-                if (!netWorkState && !laserModelsData) {
+                if (!_networkState && !laserModelsData) {
                     NSLog(@"请检查网络连接");
                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 LaserViewController *laVC = [[LaserViewController alloc]init];
                 if(!laserModelsData){
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取激光类数据成功！");
-                        laVC.laserModels = _menuVM.lasers;
-
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                        laVC.laserModels = weakSelf.menuVM.lasers;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
-
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *laserModels = [NSMutableArray array];
                     for (int i = 0; i < laserModelsData.count; i++) {
@@ -378,25 +401,28 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 laVC.childMeunIndex = index;
                 vc = laVC;
             }else if (index == 1){
-
-                if (!netWorkState && !injectionModelsData) {
+                if (!_networkState && !injectionModelsData) {
                     NSLog(@"请检查网络连接");
-                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
+                    [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 InjectionViewController *inVC = [[InjectionViewController alloc]init];
-
                 if(!injectionModelsData){
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取注射类数据成功！");
-                        inVC.injectionModels = _menuVM.injections;
-            
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                        inVC.injectionModels = weakSelf.menuVM.injections;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *injectionModels = [NSMutableArray array];
-
+                    
                     for (int i = 0; i < injectionModelsData.count; i++) {
                         NSData *data = injectionModelsData[i];
                         InjectionModel *model = [NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -407,91 +433,106 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 inVC.childMeunIndex = index;
                 vc = inVC;
             }else if (index == 2){
-                if (!netWorkState && !plasticModelsData) {
+                if (!_networkState && !plasticModelsData) {
                     NSLog(@"请检查网络连接");
-                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
+                    [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 PlasticViewController *plVC = [[PlasticViewController alloc]init];
-
+                
                 if (!plasticModelsData) {
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
-                        plVC.plasticModels = _menuVM.plastics;
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                        plVC.plasticModels = weakSelf.menuVM.plastics;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *plasticModels = [NSMutableArray array];
-
+                    
                     for (int i = 0; i < plasticModelsData.count; i++) {
                         NSData *data = plasticModelsData[i];
                         PlasticModel *model = [NSKeyedUnarchiver unarchiveObjectWithData:data];
                         [plasticModels addObject:model];
                     }
                     plVC.plasticModels = plasticModels;
-
+                    
                 }
                 plVC.childMeunIndex = index;
                 vc = plVC;
             }else if(index == 3){
-                if (!netWorkState  && !healthModelsData) {
+                if (!_networkState  && !healthModelsData) {
                     NSLog(@"请检查网络连接");
-                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
+                    [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
-
                 HealthViewController *heVC = [[HealthViewController alloc]init];
-
                 if (!healthModelsData) {
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
-                        heVC.healthModels = _menuVM.healths;
-
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                        heVC.healthModels = weakSelf.menuVM.healths;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *healthModels = [NSMutableArray array];
-
+                    
                     for (int i = 0; i < healthModelsData.count; i++) {
                         NSData *data = healthModelsData[i];
                         HealthModel *model = [NSKeyedUnarchiver unarchiveObjectWithData:data];
                         [healthModels addObject:model];
                     }
                     heVC.healthModels = healthModels;
-
+                    
                 }
                 heVC.childMeunIndex = index;
                 vc = heVC;
             }
-
-
         }
             break;
         case 3://健康美
         {
-
+            
         }
             break;
         case 4://引荐项目
         {
-
+            
         }
             break;
         case 5://周刊
         {
-
+            
         }
             break;
-
+            
         default:
             break;
     }
     //没有获取到数据的时候，第一个主目录的子目录不允许进入二级界面
     if(_menuIndex == 1){
         if ((index == 1 && medicalModelsData.length) || (index == 2 && areaModelsData.length) || (index == 3 && serviceModelsData.length) || (index == 4 && aboutModelsData.length)) {
-             [self.navigationController pushViewController:vc animated:YES];
+            MWPhotoBrowser *browser = [[MWPhotoBrowser alloc]init];
+            browser.delegate = self;
+            browser.displayNavArrows = NO;
+            browser.displayActionButton = NO;
+            browser.zoomPhotosToFill = YES;
+            [browser showNextPhotoAnimated:YES];
+            [browser showPreviousPhotoAnimated:YES];
+            [browser setCurrentPhotoIndex:0];
+            [self.navigationController pushViewController:browser animated:YES];
         }else{
             return;
         }
@@ -502,7 +543,6 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
             return;
         }
     }
-
     
 }
 

@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import "PYPhotoBrowser.h"
 #import <MWPhotoBrowser/MWPhotoBrowser.h>
 @interface BaseIntroViewController : MWPhotoBrowser
 

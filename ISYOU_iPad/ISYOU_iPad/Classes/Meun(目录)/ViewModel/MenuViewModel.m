@@ -13,12 +13,12 @@
 #import "PlasticModel.h"
 #import "HealthModel.h"
 
-#define SERVER_ADDR   @"http://119.23.41.147:8080/isyou/"
+#define SERVER_ADDR   @"http://122.114.15.61:8090/isyou/"
 /** 获取缩略图路径 */
-#define URL_LASER     @"download2?folderName=激光类&type=IPAD"
-#define URL_INJECTION @"download2?folderName=注射类&type=IPAD"
-#define URL_PLASTIC   @"download2?folderName=整形外科&type=IPAD"
-#define URL_HEALTH    @"download2?folderName=大健康类&type=IPAD"
+#define URL_LASER     @"download2?folderName=激光类&version=IPAD"
+#define URL_INJECTION @"download2?folderName=注射类&version=IPAD"
+#define URL_PLASTIC   @"download2?folderName=整形外科&version=IPAD"
+#define URL_HEALTH    @"download2?folderName=大健康类&version=IPAD"
 /** 服务器存放崩溃标志的路径 */
 #define URL_MakeCrash @"getFlag?type=IPAD"
 
@@ -99,70 +99,36 @@
 - (void)requestPhotoURL:(NSString *)url Type:(RequestMenuDataType)type SucceedBlock:(SucceedBlock)succeedBlock FailedBlock:(FailedBlock)failedBlock {
     __weak typeof(self) weakSelf = self;
     [[NetworkTool sharedNetworkTool]get:url params:nil success:^(id responseObject) {
-        //NSLog(@"%@", responseObject);
-        NSString *str = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-        
-        
-        // NSLog(@"获取的缩略图片数据-----%@", str);
-        
-        NSInteger length = str.length;
-        if(length < 3) {
+        NSLog(@"%@", responseObject);
+        NSArray *results = responseObject;
+        if (results.count == 0 || results == nil) {
             failedBlock();
-            return ;
+            return;
         }
-        str = [str substringWithRange:NSMakeRange(1, length-2)];
+        NSString *thumbnailImageUrl = @"";
         
-        // 2.拿到缩略图的路径
-        NSArray *thumbnailUrls =[str componentsSeparatedByString:@"],"];
-        
-        // 3.拼接一个完整的图片路径
         NSMutableArray *datas = [NSMutableArray array];
-        for (int i = 0; i < thumbnailUrls.count; i++) {
+        for (NSArray *arr in results) {
             weakSelf.laserModel = [LaserModel new];
-            
             weakSelf.injectionModel = [InjectionModel new];
-            
             weakSelf.plasticModel = [PlasticModel new];
-            
             weakSelf.healthModel = [HealthModel new];
-            
-            NSInteger length = [thumbnailUrls[i] length];
-            NSString *photoUrl = [thumbnailUrls[i] substringWithRange:(i==thumbnailUrls.count-1)? NSMakeRange(1, length-2): NSMakeRange(1, length-1)];
-            
-            NSArray *allPhotoUrls = [photoUrl componentsSeparatedByString:@"},"];
-            
-            NSString *thumbnailImageUrl = nil;
+            NSDictionary *thumbnailImageDic = [arr firstObject];
+            NSDictionary *orignalImageDic = [arr lastObject];
+            //缩略图只有一张
+            NSString *thumbnailImageStr = [thumbnailImageDic[@"thumbnailImagrUrl"]firstObject];
+            thumbnailImageStr = [thumbnailImageStr stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+            thumbnailImageUrl = [NSString stringWithFormat:@"%@%@", SERVER_ADDR, thumbnailImageStr];
             NSMutableArray *orignalImageUrls = [NSMutableArray array];
-            for (int j = 0; j < allPhotoUrls.count; j++) {
-                NSInteger len = [allPhotoUrls[j]length];
-                NSString *photoUrl = [allPhotoUrls[j] substringWithRange:(j==allPhotoUrls.count-1)? NSMakeRange(1, len-2):NSMakeRange(1, len-1)];
-                NSArray *photoUrls = [photoUrl componentsSeparatedByString:@":"];
-                NSLog(@"%@---%@", photoUrls[0], photoUrls[1]);
-                if ([photoUrls[0] isEqualToString:@"\"thumbnailImagrUrl\""]) {
-                    thumbnailImageUrl = photoUrls[1];
-                    NSInteger len = thumbnailImageUrl.length;
-                    thumbnailImageUrl = [thumbnailImageUrl substringWithRange:NSMakeRange(2, len-4)];
-                    thumbnailImageUrl = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, thumbnailImageUrl]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-                    
-                }
-                if ([photoUrls[0] isEqualToString:@"\"orignalImagrUrls\""]){
-                    NSInteger len = [photoUrls[1] length];
-                    NSString *allOrignalImageUrl = [photoUrls[1] substringWithRange:NSMakeRange(1, len-2)];
-                    
-                    NSArray *orignalUrls = [allOrignalImageUrl componentsSeparatedByString:@","];
-                    if (orignalUrls.count == 0) return;
-                    for (int k = 0; k < orignalUrls.count; k++) {
-                        NSInteger len = [orignalUrls[k] length];
-                        if(len < 5) return;
-                        NSString *orignalImageUrl = [orignalUrls[k] substringWithRange:NSMakeRange(1, len-2)];
-                        orignalImageUrl = [[NSString stringWithFormat:@"%@%@", SERVER_ADDR, orignalImageUrl]stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-                        [orignalImageUrls addObject: orignalImageUrl];
-                    }
-                }
+            //高清图可能有多张
+            NSArray *orignalImageUrlArr = orignalImageDic[@"orignalImagrUrls"];
+            NSString *orignalImageUrl = @"";
+            for(int i=0; i<orignalImageUrlArr.count; i++){
+                orignalImageUrl = [NSString stringWithFormat:@"%@%@", SERVER_ADDR, orignalImageUrlArr[i]];
+                orignalImageUrl = [orignalImageUrl stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+                NSLog(@"高清图的URL：%@", orignalImageUrl);
+                [orignalImageUrls addObject: orignalImageUrl];
             }
-            
-            
-            
             if (type == RequestMenuDataTypeLaser) {
                 weakSelf.laserModel.thumbnailImagrUrl = thumbnailImageUrl;
                 weakSelf.laserModel.orignalImagrUrls = orignalImageUrls;
