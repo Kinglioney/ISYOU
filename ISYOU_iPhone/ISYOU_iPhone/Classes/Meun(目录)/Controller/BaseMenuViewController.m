@@ -7,7 +7,8 @@
 //
 
 #import "BaseMenuViewController.h"
-#import "PYPhotoBrowser.h"
+//#import "PYPhotoBrowser.h"
+#import <MWPhotoBrowser/MWPhotoBrowser.h>
 #import "BaseMenuCell.h"
 #import "LaserDetailViewController.h"
 #import "InjectionDetailViewController.h"
@@ -20,10 +21,12 @@
 #import "HealthModel.h"
 #define kCellId @"kCellId"
 
-@interface BaseMenuViewController ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, PYPhotoBrowseViewDataSource, PYPhotoBrowseViewDelegate>
-@property (nonatomic, strong) PYPhotosView *flowPhotosView;
+@interface BaseMenuViewController ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, MWPhotoBrowserDelegate>
+//@property (nonatomic, strong) PYPhotosView *flowPhotosView;
 
-@property (nonatomic, strong) PYPhotoBrowseView *photoBrowser;
+//@property (nonatomic, strong) PYPhotoBrowseView *photoBrowser;
+
+@property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 
 @property (nonatomic, strong) UICollectionView *collectionView;
 
@@ -50,9 +53,33 @@
 @property (nonatomic, copy  ) NSString *dateStr;
 
 @property (nonatomic, assign) NSInteger index;//记录点击是哪一个cell
+
+@property (nonatomic, strong)  MBProgressHUD *hud;
 @end
 
 @implementation BaseMenuViewController
+
+//MARK: 系统方法
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    [self setup];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:243/255.0 green:159/255.0 blue:9/255.0 alpha:1.0]];
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
+    
+}
 //MARK: 懒加载
 - (NSArray *)laserDataModels {
     if (!_laserDataModels) {
@@ -87,24 +114,6 @@
 }
 
 
-//MARK: 系统方法
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    [self setup];
-}
 - (NSMutableArray *)cellFrames {
     if (!_cellFrames) {
         _cellFrames = [NSMutableArray array];
@@ -122,21 +131,20 @@
     CGFloat itemH = itemW *  524 / 482;
     layout.itemSize = CGSizeMake(itemW, itemH);
     
-    _collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, lineMargin, kSCREEN_WIDTH, kSCREEN_HEIGHT) collectionViewLayout:layout];
+    _collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, kSCREEN_WIDTH, kSCREEN_HEIGHT-64) collectionViewLayout:layout];
     _collectionView.contentInset = UIEdgeInsetsMake(0, colMargin/2, 0, colMargin/2);
-    _collectionView.contentSize = CGSizeMake(kSCREEN_WIDTH, kSCREEN_HEIGHT+20);
+    _collectionView.contentSize = CGSizeMake(kSCREEN_WIDTH, kSCREEN_HEIGHT);
     _collectionView.backgroundColor = [UIColor whiteColor];
     [_collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([BaseMenuCell class]) bundle:nil] forCellWithReuseIdentifier:kCellId];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     _collectionView.showsVerticalScrollIndicator = NO;
     _collectionView.alwaysBounceVertical = NO;
-    //_collectionView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_collectionView];
-    
-//    [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.bottom.left.right.equalTo(self.view);
-//    }];
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [weakSelf.hud hide:YES];
+    });
 }
 
 
@@ -151,9 +159,18 @@
     bmCell.layer.borderWidth = 0.5;
     bmCell.layer.borderColor = [UIColor lightGrayColor].CGColor;
     bmCell.layer.cornerRadius = 12;
-    NSURL *url = self.thumbnailImageUrls[indexPath.row];
-
-    [bmCell.thumbnailImageView sd_setImageWithURL:url];
+    //[NSCharacterSet URLQueryAllowedCharacterSet]
+    NSString *urlStr = self.thumbnailImageUrls[indexPath.row];
+    urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    NSURL *url = [[NSURL alloc]initWithString:urlStr];
+    //[bmCell.thumbnailImageView sd_setImageWithURL:url];
+    //_hud = [MBProgressHUD showHUDAddedTo:self.view animated:true];
+    _hud.mode = MBProgressHUDAnimationFade;
+    _hud.labelText = @"Loading";
+    __weak typeof(self) weakSelf = self;
+    [bmCell.thumbnailImageView sd_setImageWithURL:url completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+        [weakSelf.hud hide:YES];
+    }];
     cell = bmCell;
     return cell;
 }
@@ -166,9 +183,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-
     _index = indexPath.row;
-
     for (UICollectionViewCell *cell in collectionView.subviews) {
         NSLog(@"Rect---%f,%f,%f,%f", cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
         CGRect frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
@@ -177,60 +192,60 @@
     [self setupPhotoBrowser:indexPath.row];
 }
 
-
+#pragma mark - 初始化图片浏览器
 - (void)setupPhotoBrowser:(NSInteger)index{
-    _photoBrowser = [[PYPhotoBrowseView alloc]initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, kSCREEN_HEIGHT)];
-    _photoBrowser.dataSource = self;
+    _photoBrowser = [[MWPhotoBrowser alloc]init];
     _photoBrowser.delegate = self;
-    _photoBrowser.autoRotateImage = NO;
-    CGRect frame = [self.cellFrames[index] CGRectValue];
-    //CGFloat lineMargin = 30;//行间距
-    CGFloat colMargin = 40;//列间距
-    CGFloat width = frame.size.width;
-    CGFloat height = frame.size.height;
-    CGFloat formX = frame.origin.x + colMargin/2;
-    CGFloat formY = frame.origin.y + 100 ;
-    CGFloat toX = formX ;
-    CGFloat toY = formY ;
-
-    //显示图片相对于主窗口的位置
-    _photoBrowser.frameFormWindow = CGRectMake(formX, formY, width, height);
-    //消失回到相对于住窗口的指定位置
-    _photoBrowser.frameToWindow = CGRectMake(toX, toY, width, height);;
-    _photoBrowser.placeholderImage = [UIImage imageNamed:@"bg_lightGray"];
-    _photoBrowser.hiddenDuration = 0.20;
-    _photoBrowser.showDuration = 0.20;
-    
-    [_photoBrowser show];
+    _photoBrowser.displayNavArrows = NO;
+    _photoBrowser.displayActionButton = NO;
+    _photoBrowser.zoomPhotosToFill = YES;
+    [_photoBrowser showNextPhotoAnimated:YES];
+    [_photoBrowser showPreviousPhotoAnimated:YES];
+    [_photoBrowser setCurrentPhotoIndex:0];
+    [self.navigationController pushViewController:_photoBrowser animated:YES];
 }
 
 
 //MARK: setter
 -(void)setThumbnailImageUrls:(NSMutableArray *)thumbnailImageUrls{
     _thumbnailImageUrls = thumbnailImageUrls;
+    //根据缩略图的数量设置contentSize
+    CGFloat lineMargin = 30;//行间距
+    CGFloat colMargin = 40;//列间距
+    CGFloat itemW = (kSCREEN_WIDTH - 3 * colMargin)/2;
+    CGFloat itemH = itemW *  524 / 482;
+    self.collectionView.contentSize = CGSizeMake(kSCREEN_WIDTH, (lineMargin+itemH)*(thumbnailImageUrls.count/2+1));
     [self.collectionView reloadData];
-
 }
 -(void)setOriginalImageUrls:(NSMutableArray *)originalImageUrls{
     _originalImageUrls = originalImageUrls;
-    if (self.photoBrowser) {
-        [self.photoBrowser removeFromSuperview];
-
-    }
     if (self.originalImageUrls.count==0) return;
 }
 
-#pragma mark - PYPhotoBrowseViewDataSource
-- (NSArray<NSString *> *)imagesURLForBrowse{
+//#pragma mark - PYPhotoBrowseViewDataSource
+//- (NSArray<NSString *> *)imagesURLForBrowse{
+//
+//    return self.originalImageUrls[_index];
+//}
+//
+//
+//#pragma mark - PYPhotoBrowseViewDelegate
+//- (void)photoBrowseView:(PYPhotoBrowseView *)photoBrowseView didSingleClickedImage:(UIImage *)image index:(NSInteger)index{
+//
+//    [photoBrowseView hidden];
+//
+//}
 
-    return self.originalImageUrls[_index];
+#pragma mark - MWPhotoBrowserDelegate
+- (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser {
+    return [self.originalImageUrls[_index] count];
 }
-
-
-#pragma mark - PYPhotoBrowseViewDelegate
-- (void)photoBrowseView:(PYPhotoBrowseView *)photoBrowseView didSingleClickedImage:(UIImage *)image index:(NSInteger)index{
-
-    [photoBrowseView hidden];
-    
+- (id<MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index {
+    //创建图片模型
+    NSString *urlStr = self.originalImageUrls[_index][index];
+    urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    NSURL *photoUrl = [[NSURL alloc]initWithString:urlStr];
+    MWPhoto *photo = [MWPhoto photoWithURL:photoUrl];
+    return photo;
 }
 @end

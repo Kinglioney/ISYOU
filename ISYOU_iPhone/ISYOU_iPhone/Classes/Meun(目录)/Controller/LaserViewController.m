@@ -16,7 +16,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    self.title = @"激光类";
 }
 
 - (void)setLaserModels:(NSArray *)laserModels{

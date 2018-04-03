@@ -16,5 +16,5 @@
 #import "Masonry.h"
 #import "UIImageView+WebCache.h"
 #import "MJExtension.h"
-
+#import <MBProgressHUD/MBProgressHUD.h>
 #endif /* ISYOU_PrefixHeader_pch */

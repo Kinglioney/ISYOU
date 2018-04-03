@@ -3,5 +3,5 @@ target 'ISYOU_iPhone' do
 pod 'AFNetworking'
 pod 'Masonry'
 pod 'MJExtension'
-
+pod 'MWPhotoBrowser'
 end

@@ -72,7 +72,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
         _childMenuBar = [[ChildMenuBarView alloc] initWithFrame:CGRectMake(28, 75, 51, kSCREEN_HEIGHT - 200)];
         _childMenuBar.delegate = self;
         [self.view addSubview:_childMenuBar];
-        
+        //长按手势
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(updateData:)];
         longPress.minimumPressDuration = 3.0f;
         [_childMenuBar addGestureRecognizer:longPress];
@@ -102,7 +102,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
     // 导航栏
     [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:243/255.0 green:159/255.0 blue:9/255.0 alpha:1.0]];//设置背景颜色
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];//设置按钮颜色
-    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(-100, 0) forBarMetrics:UIBarMetricsDefault];
 
     //初始化视图模型
     _introVM = [[IntroViewModel alloc]init];
@@ -232,11 +232,16 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                  iyVC.childMeunIndex = index;
                 
                 if (!isyouModelsData && !isyouModelsData.length) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
                         iyVC.isyouModel = self.introVM.isyouModel;
                     } failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
 
                     IsyouModel *isyouModel = [NSKeyedUnarchiver unarchiveObjectWithData:isyouModelsData];
@@ -256,11 +261,17 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 mtVC.childMeunIndex = index;
 
                 if (!medicalModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
-                        mtVC.medicalTeamModel = self.introVM.medicalModel;
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
+                    mtVC.medicalTeamModel = self.introVM.medicalModel;
+                    [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
 
                     MedicalTeamModel *medicalTeamModel = [NSKeyedUnarchiver unarchiveObjectWithData:medicalModelsData];
@@ -282,21 +293,22 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 anVC.childMeunIndex = index;
 
                 if (!areaModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
-                        anVC.areaModel = self.introVM.areaModel;
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
+                    anVC.areaModel = self.introVM.areaModel;
+                    [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-
                     AreaModel *areaModel = [NSKeyedUnarchiver unarchiveObjectWithData:areaModelsData];
-
                     anVC.areaModel = areaModel;
-                    
                 }
-
                 vc = anVC;
-
             }else if(index == 3 ){
                 if (!_networkState && !serviceModelsData.length) {
                     NSLog(@"请检查网络连接");
@@ -307,17 +319,20 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 stVC.childMeunIndex = index;
 
                 if (!serviceModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
-                        stVC.serviceTeamModel = self.introVM.serviceModel;
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
+                    stVC.serviceTeamModel = self.introVM.serviceModel;
+                    [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
-
-                ServiceTeamModel *serviceModel = [NSKeyedUnarchiver unarchiveObjectWithData:serviceModelsData];
-
+                    ServiceTeamModel *serviceModel = [NSKeyedUnarchiver unarchiveObjectWithData:serviceModelsData];
                     stVC.serviceTeamModel = serviceModel;
-
                 }
 
                 vc = stVC;
@@ -325,34 +340,33 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 AboutViewController *aboutVC = [[AboutViewController alloc]init];
                 aboutVC.childMeunIndex = index;
                 if (!aboutModelsData) {
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
-                        aboutVC.aboutModel = self.introVM.aboutModel;
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
+                    aboutVC.aboutModel = self.introVM.aboutModel;
+                    [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     if (!_networkState && !aboutModelsData.length) {
                         NSLog(@"请检查网络连接");
                          [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                         return;
                     }
-
                 AboutModel *aboutModel = [NSKeyedUnarchiver unarchiveObjectWithData:aboutModelsData];
-
                 aboutVC.aboutModel = aboutModel;
-                    
                 }
-
                 vc = aboutVC;
             }
-
         }
             break;
         case 2://项目单
         {
-
             if(index == 0){
-
                 if (!_networkState && !laserModelsData) {
                     NSLog(@"请检查网络连接");
                     [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
@@ -360,14 +374,18 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 }
                 LaserViewController *laVC = [[LaserViewController alloc]init];
                 if(!laserModelsData){
+                    [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取激光类数据成功！");
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         laVC.laserModels = weakSelf.menuVM.lasers;
-
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
-
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *laserModels = [NSMutableArray array];
                     for (int i = 0; i < laserModelsData.count; i++) {
@@ -380,22 +398,25 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 laVC.childMeunIndex = index;
                 vc = laVC;
             }else if (index == 1){
-
                 if (!_networkState && !injectionModelsData) {
                     NSLog(@"请检查网络连接");
                      [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
                 InjectionViewController *inVC = [[InjectionViewController alloc]init];
-
                 if(!injectionModelsData){
+                     [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取注射类数据成功！");
-                        inVC.injectionModels = weakSelf.menuVM.injections;
-            
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
+                    inVC.injectionModels = weakSelf.menuVM.injections;
+                    [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *injectionModels = [NSMutableArray array];
 
@@ -417,12 +438,18 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 PlasticViewController *plVC = [[PlasticViewController alloc]init];
 
                 if (!plasticModelsData) {
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         plVC.plasticModels = weakSelf.menuVM.plastics;
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *plasticModels = [NSMutableArray array];
 
@@ -442,17 +469,20 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                      [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
                     return;
                 }
-
                 HealthViewController *heVC = [[HealthViewController alloc]init];
-
                 if (!healthModelsData) {
+                    [MBProgressHUD hideHUDForView:self.view animated:true];
                     [_menuVM requestPhotoDataWithType:index finishBlock:^{
                         NSLog(@"获取整形外科数据成功！");
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
                         heVC.healthModels = weakSelf.menuVM.healths;
-
+                        [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
                     }];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:true];
+                    });
                 }else{
                     NSMutableArray *healthModels = [NSMutableArray array];
 
@@ -467,8 +497,6 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 heVC.childMeunIndex = index;
                 vc = heVC;
             }
-
-
         }
             break;
         case 3://健康美

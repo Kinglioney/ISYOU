@@ -16,6 +16,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = @"整形外科";
     // Do any additional setup after loading the view.
 }
 
