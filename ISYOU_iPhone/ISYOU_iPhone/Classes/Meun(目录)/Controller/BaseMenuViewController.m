@@ -120,31 +120,31 @@
     }
     return _cellFrames;
 }
-
+- (UICollectionView *)collectionView {
+    if (!_collectionView) {
+        CGFloat lineMargin = 30;//行间距
+        CGFloat colMargin = 40;//列间距
+        UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
+        layout.minimumLineSpacing = lineMargin;//行间距
+        layout.minimumInteritemSpacing = colMargin;//列间距
+        CGFloat itemW = (kSCREEN_WIDTH - 3 * colMargin)/2;
+        CGFloat itemH = itemW *  524 / 482;
+        layout.itemSize = CGSizeMake(itemW, itemH);
+        
+        _collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, kSCREEN_WIDTH, kSCREEN_HEIGHT-64) collectionViewLayout:layout];
+        _collectionView.contentInset = UIEdgeInsetsMake(0, colMargin/2, 0, colMargin/2);
+        _collectionView.contentSize = CGSizeMake(kSCREEN_WIDTH, kSCREEN_HEIGHT);
+        _collectionView.backgroundColor = [UIColor whiteColor];
+        [_collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([BaseMenuCell class]) bundle:nil] forCellWithReuseIdentifier:kCellId];
+        _collectionView.dataSource = self;
+        _collectionView.delegate = self;
+        _collectionView.showsVerticalScrollIndicator = NO;
+        _collectionView.alwaysBounceVertical = NO;
+    }
+    return _collectionView;
+}
 - (void)setup{
-    CGFloat lineMargin = 30;//行间距
-    CGFloat colMargin = 40;//列间距
-    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
-    layout.minimumLineSpacing = lineMargin;//行间距
-    layout.minimumInteritemSpacing = colMargin;//列间距
-    CGFloat itemW = (kSCREEN_WIDTH - 3 * colMargin)/2;
-    CGFloat itemH = itemW *  524 / 482;
-    layout.itemSize = CGSizeMake(itemW, itemH);
-    
-    _collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, kSCREEN_WIDTH, kSCREEN_HEIGHT-64) collectionViewLayout:layout];
-    _collectionView.contentInset = UIEdgeInsetsMake(0, colMargin/2, 0, colMargin/2);
-    _collectionView.contentSize = CGSizeMake(kSCREEN_WIDTH, kSCREEN_HEIGHT);
-    _collectionView.backgroundColor = [UIColor whiteColor];
-    [_collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([BaseMenuCell class]) bundle:nil] forCellWithReuseIdentifier:kCellId];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    _collectionView.showsVerticalScrollIndicator = NO;
-    _collectionView.alwaysBounceVertical = NO;
-    [self.view addSubview:_collectionView];
-    __weak typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [weakSelf.hud hide:YES];
-    });
+    [self.view addSubview:self.collectionView];
 }
 
 
@@ -164,13 +164,18 @@
     urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     NSURL *url = [[NSURL alloc]initWithString:urlStr];
     //[bmCell.thumbnailImageView sd_setImageWithURL:url];
-    //_hud = [MBProgressHUD showHUDAddedTo:self.view animated:true];
-    _hud.mode = MBProgressHUDAnimationFade;
-    _hud.labelText = @"Loading";
-    __weak typeof(self) weakSelf = self;
+//    NSLog(@"开始小菊花~~~");
+//    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//    _hud.mode = MBProgressHUDAnimationFade;
+//    _hud.labelText = @"Loading";
+
     [bmCell.thumbnailImageView sd_setImageWithURL:url completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-        [weakSelf.hud hide:YES];
-    }];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            NSLog(@"隐藏小菊花~~~");
+//            [MBProgressHUD hideHUDForView:self.view animated:YES];
+//        });
+        }
+    ];
     cell = bmCell;
     return cell;
 }
@@ -185,7 +190,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     _index = indexPath.row;
     for (UICollectionViewCell *cell in collectionView.subviews) {
-        NSLog(@"Rect---%f,%f,%f,%f", cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
         CGRect frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
         [self.cellFrames addObject:[NSValue valueWithCGRect:frame]];
     }

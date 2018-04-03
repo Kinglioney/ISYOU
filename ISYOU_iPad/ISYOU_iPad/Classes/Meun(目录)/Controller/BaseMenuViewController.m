@@ -157,11 +157,11 @@
     NSURL *url = [[NSURL alloc]initWithString:urlStr];
     //[bmCell.thumbnailImageView sd_setImageWithURL:url];
     //_hud = [MBProgressHUD showHUDAddedTo:self.view animated:true];
-    _hud.mode = MBProgressHUDAnimationFade;
-    _hud.labelText = @"Loading";
-    __weak typeof(self) weakSelf = self;
+//    _hud.mode = MBProgressHUDAnimationFade;
+//    _hud.labelText = @"Loading";
+//    __weak typeof(self) weakSelf = self;
     [bmCell.thumbnailImageView sd_setImageWithURL:url completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-        [weakSelf.hud hide:YES];
+//        [weakSelf.hud hide:YES];
     }];
     cell = bmCell;
     return cell;
@@ -177,7 +177,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     _index = indexPath.row;
     for (UICollectionViewCell *cell in collectionView.subviews) {
-        NSLog(@"Rect---%f,%f,%f,%f", cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
         CGRect frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
         [self.cellFrames addObject:[NSValue valueWithCGRect:frame]];
     }

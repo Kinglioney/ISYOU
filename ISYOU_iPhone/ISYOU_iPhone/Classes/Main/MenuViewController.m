@@ -244,10 +244,9 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                         [MBProgressHUD hideHUDForView:self.view animated:true];
                     });
                 }else{
-
                     IsyouModel *isyouModel = [NSKeyedUnarchiver unarchiveObjectWithData:isyouModelsData];
-
-                    iyVC.isyouModel = isyouModel;
+                    //iyVC.isyouModel = isyouModel;
+                    _introImageUrls = isyouModel.orignalImagrUrls;
                 }
 
                 vc = iyVC;
@@ -422,12 +421,12 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                     });
                 }else{
                     NSMutableArray *injectionModels = [NSMutableArray array];
-
                     for (int i = 0; i < injectionModelsData.count; i++) {
                         NSData *data = injectionModelsData[i];
                         InjectionModel *model = [NSKeyedUnarchiver unarchiveObjectWithData:data];
                         [injectionModels addObject:model];
                     }
+                    
                     inVC.injectionModels = injectionModels;
                 }
                 inVC.childMeunIndex = index;
@@ -523,7 +522,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
     }
     //没有获取到数据的时候，第一个主目录的子目录不允许进入二级界面
     if(_menuIndex == 1){
-        if ((index == 1 && medicalModelsData.length) || (index == 2 && areaModelsData.length) || (index == 3 && serviceModelsData.length) || (index == 4 && aboutModelsData.length)) {
+        if ((index == 0 && isyouModelsData.length) || (index == 1 && medicalModelsData.length) || (index == 2 && areaModelsData.length) || (index == 3 && serviceModelsData.length) || (index == 4 && aboutModelsData.length)) {
             MWPhotoBrowser *browser = [[MWPhotoBrowser alloc]init];
             browser.delegate = self;
             browser.displayNavArrows = NO;

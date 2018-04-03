@@ -29,7 +29,6 @@
             [muThumbnails addObject:model.thumbnailImagrUrl];
             [muOrignals addObject:model.orignalImagrUrls];
         }
-
     }
     [super setThumbnailImageUrls:muThumbnails];
     [super setOriginalImageUrls:muOrignals];
