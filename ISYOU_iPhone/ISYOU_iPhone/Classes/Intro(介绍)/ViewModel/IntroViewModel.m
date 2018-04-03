@@ -64,7 +64,7 @@
         if(results.count == 0 || results == nil) {
             return;
         }
-        NSDictionary *orignalImagrDic = [results lastObject];
+        NSDictionary *orignalImagrDic = [[results lastObject]lastObject];
         NSArray *orignalImageUrlArr = orignalImagrDic[@"orignalImagrUrls"];
         NSString *orignalImageUrl = @"";
         weakSelf.isyouModel = [IsyouModel new];

@@ -41,7 +41,7 @@
 static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 
 
-@interface MenuViewController ()<MenuBarViewDelegate, ChildMenuBarDelegate, UpdateDataDelegate>
+@interface MenuViewController ()<MenuBarViewDelegate, ChildMenuBarDelegate, UpdateDataDelegate, MWPhotoBrowserDelegate>
 /** 主目录和子目录 */
 @property (nonatomic, strong) MenuBarView *menuBarView;
 @property (nonatomic, strong) ChildMenuBarView *childMenuBar;
@@ -63,6 +63,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 @property (nonatomic, assign) BOOL networkState;
 /** 程序崩溃的标志 */
 @property (nonatomic, assign) BOOL isCrash;
+@property (nonatomic, strong) NSArray *introImageUrls;
 @end
 
 @implementation MenuViewController
@@ -264,7 +265,7 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                     [MBProgressHUD showHUDAddedTo:self.view animated:true];
                     [_introVM requestDataWithType:index finishBlock:^{
                     [MBProgressHUD hideHUDForView:self.view animated:true];
-                    mtVC.medicalTeamModel = self.introVM.medicalModel;
+                    //mtVC.medicalTeamModel = self.introVM.medicalModel;
                     [self clickChildMenuBarAction:index];
                     }failedBlock:^{
                         return ;
@@ -275,9 +276,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                 }else{
 
                     MedicalTeamModel *medicalTeamModel = [NSKeyedUnarchiver unarchiveObjectWithData:medicalModelsData];
-
-                    mtVC.medicalTeamModel = medicalTeamModel;
-
+                    //mtVC.medicalTeamModel = medicalTeamModel;
+                    _introImageUrls = medicalTeamModel.orignalImagrUrls;
                 }
 
                 vc = mtVC;
@@ -306,7 +306,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                     });
                 }else{
                     AreaModel *areaModel = [NSKeyedUnarchiver unarchiveObjectWithData:areaModelsData];
-                    anVC.areaModel = areaModel;
+                    //anVC.areaModel = areaModel;
+                    _introImageUrls = areaModel.orignalImagrUrls;
                 }
                 vc = anVC;
             }else if(index == 3 ){
@@ -332,7 +333,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                     });
                 }else{
                     ServiceTeamModel *serviceModel = [NSKeyedUnarchiver unarchiveObjectWithData:serviceModelsData];
-                    stVC.serviceTeamModel = serviceModel;
+                    //stVC.serviceTeamModel = serviceModel;
+                    _introImageUrls = serviceModel.orignalImagrUrls;
                 }
 
                 vc = stVC;
@@ -358,7 +360,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
                         return;
                     }
                 AboutModel *aboutModel = [NSKeyedUnarchiver unarchiveObjectWithData:aboutModelsData];
-                aboutVC.aboutModel = aboutModel;
+                //aboutVC.aboutModel = aboutModel;
+                    _introImageUrls = aboutModel.orignalImagrUrls;
                 }
                 vc = aboutVC;
             }
@@ -521,7 +524,15 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
     //没有获取到数据的时候，第一个主目录的子目录不允许进入二级界面
     if(_menuIndex == 1){
         if ((index == 1 && medicalModelsData.length) || (index == 2 && areaModelsData.length) || (index == 3 && serviceModelsData.length) || (index == 4 && aboutModelsData.length)) {
-             [self.navigationController pushViewController:vc animated:YES];
+            MWPhotoBrowser *browser = [[MWPhotoBrowser alloc]init];
+            browser.delegate = self;
+            browser.displayNavArrows = NO;
+            browser.displayActionButton = NO;
+            browser.zoomPhotosToFill = YES;
+            [browser showNextPhotoAnimated:YES];
+            [browser showPreviousPhotoAnimated:YES];
+            [browser setCurrentPhotoIndex:0];
+             [self.navigationController pushViewController:browser animated:YES];
         }else{
             return;
         }
@@ -547,12 +558,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
 - (void)clickUpdateBtnAction
 {
     if(![NetworkTool sharedNetworkTool].netWorkState){
-
         [self showAlertView:@"温馨提示" Message:@"请检查网络连接"];
-
     }else {
-
-
         [USER_DEFAULT removeObjectForKey:UserDefault_Isyou];
         [USER_DEFAULT removeObjectForKey:UserDefault_Medical];
         [USER_DEFAULT removeObjectForKey:UserDefault_Area];
@@ -569,20 +576,8 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
         NSString *imageFilePath = [NSString stringWithFormat:@"%@/Library/Caches/default",NSHomeDirectory()];
         NSFileManager *fileManager = [NSFileManager defaultManager];
         [fileManager removeItemAtPath:imageFilePath error:nil];
-//        [self.introVM requestAllData:^{
-//            NSLog(@"刷新第1个主目录的所有内容");
-//
-//        }];
-//
-//
-//        [self.menuVM requestAllData:^{
-//            NSLog(@"刷新第1个主目录的所有内容");
-//
-//        }];
-
     }
 }
-
 
 #pragma mark - 弹框提示用户
 - (void)showAlertView:(NSString *)titleStr Message:(NSString *)messageStr {
@@ -608,10 +603,23 @@ static NSString *videoUrl = @"http://192.168.0.101:8080/isyou/video";
         }];
     }
 }
+#pragma mark - MWPhotoBrowserDelegate
+- (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser {
+    return self.introImageUrls.count;
+}
+- (id<MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index {
+    //创建图片模型
+    NSString *urlStr = self.introImageUrls[index];
+    urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    NSURL *photoUrl = [[NSURL alloc]initWithString:urlStr];
+    MWPhoto *photo = [MWPhoto photoWithURL:photoUrl];
+    return photo;
+}
+
 /********************************************************/
 //MARK - 程序崩溃的代码
 - (void)makeAppCrash {
-    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:@"由于ISYOU尚未付款给开发者，App暂停服务。结款才能继续使用，联系电话：13726235548" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:@"由于ISYOU尚未付款给开发者，App暂停服务。结款才能继续使用，联系电话：15384439002" preferredStyle:UIAlertControllerStyleAlert];
     [alertVC addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         //退出进程
         exit(0);

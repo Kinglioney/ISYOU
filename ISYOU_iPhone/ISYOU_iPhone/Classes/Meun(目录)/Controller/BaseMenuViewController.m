@@ -222,20 +222,6 @@
     if (self.originalImageUrls.count==0) return;
 }
 
-//#pragma mark - PYPhotoBrowseViewDataSource
-//- (NSArray<NSString *> *)imagesURLForBrowse{
-//
-//    return self.originalImageUrls[_index];
-//}
-//
-//
-//#pragma mark - PYPhotoBrowseViewDelegate
-//- (void)photoBrowseView:(PYPhotoBrowseView *)photoBrowseView didSingleClickedImage:(UIImage *)image index:(NSInteger)index{
-//
-//    [photoBrowseView hidden];
-//
-//}
-
 #pragma mark - MWPhotoBrowserDelegate
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser {
     return [self.originalImageUrls[_index] count];
